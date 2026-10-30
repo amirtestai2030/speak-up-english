@@ -194,12 +194,29 @@ function pickVoice(){
   voice = vs.sort((a,b)=>score(b)-score(a))[0];
 }
 if("speechSynthesis" in window){ pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
+let currentUtterance=null; // kept global: iOS drops utterances that get garbage-collected
+function speakStatus(msg){
+  const el=document.querySelector("main section:not([hidden]) .status");
+  if(el && !el.querySelector("button")) el.textContent=msg;
+}
 function speak(text, rate){
-  if(!("speechSynthesis" in window)) return;
-  speechSynthesis.cancel();
+  if(!("speechSynthesis" in window)){ speakStatus("הקראה לא נתמכת בדפדפן הזה."); return; }
+  const synth=speechSynthesis;
+  if(synth.speaking || synth.pending) synth.cancel();
+  if(!voice) pickVoice();
   const u = new SpeechSynthesisUtterance(text);
-  u.lang="en-US"; u.rate = rate || 0.92; if(voice) u.voice = voice;
-  speechSynthesis.speak(u);
+  u.lang="en-US"; u.rate = rate || 0.92; u.volume=1; u.pitch=1;
+  if(voice) u.voice = voice;
+  let started=false;
+  u.onstart=()=>{ started=true; speakStatus("משמיע..."); };
+  u.onend=()=>{ if(started) speakStatus(""); };
+  u.onerror=e=>{ if(e.error!=="interrupted" && e.error!=="canceled") speakStatus("ההקראה נכשלה ("+e.error+")."); };
+  currentUtterance=u;
+  synth.speak(u);
+  if(synth.paused) synth.resume();
+  setTimeout(()=>{
+    if(!started && !synth.speaking) speakStatus("ההקראה לא התחילה. באייפון: ודא שמתג השקט בצד המכשיר לא מופעל, והגבר עוצמת שמע.");
+  },1800);
 }
 
 /* ---------- speech: recognition ---------- */
