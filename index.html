@@ -1,0 +1,541 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Speak Up אנגלית מדוברת</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700&family=Literata:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+/* Layout: one narrow column, a sticky header with the level pill, three tabs; the English practice text is the hero of every card. */
+:root{
+  --bg:#f2f6f5; --surface:#ffffff; --ink:#132426; --muted:#5a6f72; --line:#d3dedc;
+  --accent:#0e7c74; --accent-ink:#ffffff; --warm:#c2410c; --good:#15803d; --bad:#b42318; --soft:#e3efec;
+  --font-ui:'Heebo',system-ui,-apple-system,sans-serif; --font-en:'Literata',Georgia,'Times New Roman',serif;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#0e1819; --surface:#162325; --ink:#e7efee; --muted:#95aaac; --line:#27393c;
+    --accent:#34c6b8; --accent-ink:#06211f; --warm:#fb923c; --good:#4ade80; --bad:#f87171; --soft:#1c2e31; color-scheme:dark }
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-ui);font-size:16px;line-height:1.55}
+body{padding-block:0 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:720px;margin:0 auto}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:18px 10px;flex-wrap:wrap}
+header h1{font-size:1.35rem;margin:0;font-weight:700;letter-spacing:-.01em}
+header h1 span{font-family:var(--font-en);font-weight:600;color:var(--accent)}
+.pill{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 12px;font-size:.9rem;font-variant-numeric:tabular-nums}
+.pill b{color:var(--accent)}
+nav{display:flex;gap:6px;border-bottom:1px solid var(--line);margin-bottom:18px}
+nav button{background:none;border:0;border-bottom:3px solid transparent;padding:10px 14px;font:inherit;font-weight:500;color:var(--muted);cursor:pointer;margin-bottom:-1px}
+nav button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+nav button:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px;min-width:0}
+.card h2{margin:0 0 6px;font-size:1.15rem;text-wrap:balance}
+.eyebrow{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:500;margin-bottom:6px}
+.en{direction:ltr;text-align:left;font-family:var(--font-en);font-size:1.45rem;line-height:1.45;margin:10px 0 6px;max-width:34ch}
+.en.sm{font-size:1.1rem}
+.trans{color:var(--muted);margin:0 0 10px}
+.chip{display:inline-block;background:var(--soft);color:var(--ink);border-radius:8px;padding:2px 10px;font-size:.85rem;margin-inline-end:6px}
+.hint{border-inline-start:3px solid var(--accent);padding:6px 12px;margin:10px 0;background:var(--soft);border-radius:0 8px 8px 0;font-size:.95rem}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:12px}
+.btn{font:inherit;font-weight:500;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:9px 16px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;min-height:42px}
+.btn svg{width:18px;height:18px;flex:none}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.rec{background:var(--warm);color:#fff;border-color:var(--warm)}
+.btn.rec .dot{width:10px;height:10px;border-radius:50%;background:#fff;animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+@media (prefers-reduced-motion:reduce){.btn.rec .dot{animation:none}}
+.btn:disabled{opacity:.5;cursor:default}
+.options{display:grid;gap:8px;margin-top:12px}
+.options button{text-align:start;font:inherit;padding:10px 14px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;cursor:pointer}
+.options button.en-opt{direction:ltr;text-align:left;font-family:var(--font-en);font-size:1.05rem}
+.options button.right{border-color:var(--good);background:color-mix(in srgb,var(--good) 12%,var(--surface))}
+.options button.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 10%,var(--surface))}
+.words{direction:ltr;text-align:left;font-family:var(--font-en);font-size:1.4rem;line-height:1.6;margin:10px 0}
+.words span{padding:0 2px;border-radius:4px}
+.words .hit{color:var(--good)}
+.words .miss{color:var(--bad);text-decoration:underline wavy;text-decoration-thickness:1.5px}
+.heard{direction:ltr;text-align:left;font-family:var(--font-en);color:var(--muted);font-style:italic;margin:4px 0 10px}
+.score{font-size:2rem;font-weight:700;font-variant-numeric:tabular-nums;line-height:1}
+.score.good{color:var(--good)}.score.mid{color:var(--warm)}.score.bad{color:var(--bad)}
+.scoreline{display:flex;align-items:baseline;gap:10px;margin-top:10px}
+.scoreline small{color:var(--muted)}
+.tips{margin:8px 0 0;padding-inline-start:18px}
+.tips li{margin-bottom:4px}
+.tips .w{font-family:var(--font-en);direction:ltr;unicode-bidi:isolate;font-weight:600}
+.status{color:var(--muted);font-size:.92rem;min-height:1.4em;margin-top:8px}
+.banner{background:color-mix(in srgb,var(--warm) 14%,var(--surface));border:1px solid var(--warm);border-radius:10px;padding:10px 14px;margin-bottom:14px}
+.progress{height:6px;background:var(--soft);border-radius:3px;overflow:hidden;margin-bottom:14px}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+table{width:100%;border-collapse:collapse;font-size:.95rem}
+th,td{text-align:start;padding:8px 6px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+th{color:var(--muted);font-weight:500;font-size:.85rem}
+.tablewrap{overflow-x:auto}
+.hard{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.hard span{direction:ltr;font-family:var(--font-en);background:var(--soft);border-radius:8px;padding:2px 10px}
+.hard span small{color:var(--muted);margin-left:4px}
+.muted{color:var(--muted)}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-top:12px}
+.metrics div{border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.metrics b{display:block;font-size:1.3rem;font-variant-numeric:tabular-nums}
+.metrics small{color:var(--muted)}
+input[type=text],select{font:inherit;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);min-width:0}
+textarea{width:100%;min-height:140px;font:inherit;font-size:.9rem;border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--surface);color:var(--ink)}
+.hiddenbox{display:none}
+footer{color:var(--muted);font-size:.85rem;margin-top:24px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1><span>Speak Up</span> · אנגלית מדוברת</h1>
+    <div class="pill">רמה <b id="levelPill">—</b></div>
+  </header>
+
+  <div id="support" class="banner" hidden></div>
+
+  <nav role="tablist">
+    <button role="tab" id="tab-diag" aria-selected="true" data-screen="diag">אבחון</button>
+    <button role="tab" id="tab-lesson" aria-selected="false" data-screen="lesson">שיעור</button>
+    <button role="tab" id="tab-progress" aria-selected="false" data-screen="progress">התקדמות</button>
+  </nav>
+
+  <main>
+    <section id="screen-diag"></section>
+    <section id="screen-lesson" hidden></section>
+    <section id="screen-progress" hidden></section>
+  </main>
+
+  <footer>אבטיפוס. זיהוי דיבור והקראה דרך הדפדפן בלבד, ללא שירות חיצוני. הנתונים נשמרים בדפדפן הזה בלבד.</footer>
+</div>
+
+<script>
+/* ---------- content bank (authored for Hebrew speakers) ---------- */
+const LEVELS = ["A1","A2","B1","B2"];
+const LEVEL_NAMES = {A1:"מתחילים", A2:"בסיסי", B1:"ביניים", B2:"ביניים-גבוה"};
+
+const DIAG = [
+  {type:"mc", lvl:1, pts:1, q:"בחר את המילה הנכונה:", en:"I ___ a student.", opts:["am","is","are"], ans:0},
+  {type:"mc", lvl:1, pts:1, q:"בחר את המילה הנכונה:", en:"She ___ to school every day.", opts:["go","goes","going"], ans:1},
+  {type:"mc", lvl:2, pts:2, q:"בחר את המילה הנכונה:", en:"I have lived here ___ 2015.", opts:["for","since","from"], ans:1},
+  {type:"listen", lvl:2, pts:2, q:"האזן למשפט ובחר את המשמעות הנכונה:", en:"Could you tell me what time the museum opens tomorrow?",
+    opts:["האם תוכל לומר לי כמה עולה כרטיס למוזיאון?","האם תוכל לומר לי מתי המוזיאון נפתח מחר?","האם המוזיאון סגור מחר?"], ans:1},
+  {type:"mc", lvl:3, pts:3, q:"בחר את המילה הנכונה:", en:"If I ___ more time, I would travel more.", opts:["have","had","will have"], ans:1},
+  {type:"mc", lvl:4, pts:4, q:"בחר את הביטוי הנכון:", en:"The proposal was rejected ___ its high cost.", opts:["despite","due to","although"], ans:1},
+  {type:"speak", lvl:1, pts:1, q:"קרא את המשפט בקול:", en:"I live in a small apartment near the sea.", trans:"אני גר בדירה קטנה ליד הים."},
+  {type:"speak", lvl:3, pts:3, q:"קרא את המשפט בקול:", en:"I think working from home is more productive than going to the office.", trans:"אני חושב שעבודה מהבית פרודוקטיבית יותר מהליכה למשרד."},
+];
+const DIAG_MAX = DIAG.reduce((s,d)=>s+d.pts,0); // 17
+
+const BANK = {
+  A1:[
+    {en:"I wake up at seven every morning.", he:"אני מתעורר בשבע כל בוקר.", focus:"W מול V", hint:"ב-wake השפתיים מתעגלות בלי שהשיניים נוגעות בשפה. ב-seven ה-v נוצרת עם השיניים על השפה התחתונה."},
+    {en:"The weather is very nice today.", he:"מזג האוויר נעים מאוד היום.", focus:"TH", hint:"ב-The וב-weather קצה הלשון נוגע בשיניים העליונות. לא \"ד\" ולא \"ז\"."},
+    {en:"She works in a big hospital.", he:"היא עובדת בבית חולים גדול.", focus:"סיומת S", hint:"ב-works ה-s בסוף חייבת להישמע. דוברי עברית נוטים לבלוע אותה."},
+    {en:"We have three children.", he:"יש לנו שלושה ילדים.", focus:"TH חסר קול", hint:"ב-three האוויר עובר בין הלשון לשיניים בלי קול. לא \"תרי\" ולא \"סרי\"."},
+    {en:"I would like a cup of coffee, please.", he:"אני רוצה כוס קפה, בבקשה.", focus:"L שקטה", hint:"ב-would ה-l לא נשמעת: \"ווּד\". ב-please התנועה ארוכה: \"פליייז\"."},
+  ],
+  A2:[
+    {en:"Yesterday I visited my grandmother in the north.", he:"אתמול ביקרתי את סבתי בצפון.", focus:"סיומת -ED", hint:"ב-visited הסיומת נשמעת כהברה נפרדת: \"ויזיטִד\". ב-north הלשון בין השיניים."},
+    {en:"Could you tell me where the station is?", he:"תוכל לומר לי איפה התחנה?", focus:"L שקטה, SH", hint:"ב-Could ה-l שקטה. ב-station האמצע נשמע \"שְן\": \"סטיישְן\"."},
+    {en:"I'm looking for a cheaper flight to London.", he:"אני מחפש טיסה זולה יותר ללונדון.", focus:"CH, הטעמה", hint:"ב-cheaper הצליל \"צ'\" ברור. ב-London ההטעמה על ההברה הראשונה: LON-don."},
+    {en:"They usually eat dinner together on Fridays.", he:"הם בדרך כלל אוכלים ארוחת ערב יחד בימי שישי.", focus:"הטעמה, TH", hint:"usually מוטעמת בהתחלה: YOU-zhu-ally. ב-together הלשון בין השיניים."},
+    {en:"There is a world of difference between these two words.", he:"יש הבדל עצום בין שתי המילים האלה.", focus:"R + L", hint:"ב-world וב-words ה-r רכה, בלי גרון, והלשון לא נוגעת בחך. ב-these ה-th קולית."},
+  ],
+  B1:[
+    {en:"I've been thinking about changing my career.", he:"חשבתי על שינוי קריירה.", focus:"TH, הטעמה", hint:"ב-thinking האוויר בין הלשון לשיניים. ב-career ההטעמה על ההברה השנייה: ca-REER."},
+    {en:"The meeting was postponed because of the strike.", he:"הפגישה נדחתה בגלל השביתה.", focus:"-ED כ-D", hint:"ב-postponed הסיומת נשמעת כ-d אחת: \"פוסטפונד\", וההטעמה: post-PONED."},
+    {en:"Although it was raining, we decided to walk home.", he:"למרות שירד גשם, החלטנו ללכת הביתה.", focus:"TH, L שקטה", hint:"ב-Although ה-th קולית וה-gh שקטה: \"אול-דֿוֹ\". ב-walk ה-l שקטה: \"ווֹק\"."},
+    {en:"She explained the problem clearly and patiently.", he:"היא הסבירה את הבעיה בבירור ובסבלנות.", focus:"סיומות -LY", hint:"patiently: PAY-shent-ly, שלוש הברות. ב-explained הסיומת נשמעת כ-d."},
+    {en:"Thirty-three people attended the workshop on Thursday.", he:"שלושים ושלושה אנשים השתתפו בסדנה ביום חמישי.", focus:"TH חוזר", hint:"ארבע פעמים th חסר קול: Thirty, three, Thursday. אם זה נשמע \"ס\" או \"ת\", המערכת תסמן."},
+  ],
+  B2:[
+    {en:"The committee thoroughly reviewed the environmental impact of the project.", he:"הוועדה בחנה ביסודיות את ההשפעה הסביבתית של הפרויקט.", focus:"הטעמה במילים ארוכות", hint:"environmental: en-vi-ron-MEN-tal. thoroughly: THUR-uh-lee, עם th חסר קול בהתחלה."},
+    {en:"Despite the initial setbacks, the team eventually achieved its goals.", he:"למרות הקשיים הראשוניים, הצוות השיג בסופו של דבר את יעדיו.", focus:"CH, הטעמה", hint:"achieved: a-CHEEVD, הצליל \"צ'\" ואז d. eventually: e-VEN-chu-ally."},
+    {en:"I'd rather we discussed this issue thoroughly before reaching a conclusion.", he:"הייתי מעדיף שנדון בנושא ביסודיות לפני שנגיע למסקנה.", focus:"TH, SH", hint:"ב-rather ה-th קולית. ב-issue הצליל \"ש\": \"אִישוּ\". ב-conclusion ההטעמה: con-CLU-sion."},
+    {en:"Renewable energy has become increasingly competitive worldwide.", he:"אנרגיה מתחדשת הפכה תחרותית יותר ויותר ברחבי העולם.", focus:"הטעמה, R + L", hint:"competitive: com-PET-i-tive, לא על ההברה הראשונה. worldwide: ה-r וה-l רצופות, בלי תנועה ביניהן."},
+    {en:"The author's argument rests on a rather questionable assumption.", he:"טיעון המחבר נשען על הנחה מפוקפקת למדי.", focus:"TH, הטעמה", hint:"author: AW-thur, th חסר קול. questionable: QUES-tion-able, ההטעמה בהתחלה."},
+  ],
+};
+
+const FREE = {
+  A1:{q:"Tell me about your morning. What do you do first?", he:"ספר על הבוקר שלך. מה אתה עושה קודם?", vocab:["wake","breakfast","coffee","work","morning","then"]},
+  A2:{q:"Describe your last holiday. Where did you go and what did you do?", he:"תאר את החופשה האחרונה שלך. לאן נסעת ומה עשית?", vocab:["went","was","visited","stayed","beautiful","because"]},
+  B1:{q:"Do you prefer working from home or in an office? Why?", he:"אתה מעדיף לעבוד מהבית או במשרד? למה?", vocab:["prefer","because","productive","colleagues","focus","flexible"]},
+  B2:{q:"What is one change that would improve your city, and what would it take to make it happen?", he:"מהו שינוי אחד שישפר את העיר שלך, ומה נדרש כדי שיקרה?", vocab:["would","improve","infrastructure","investment","however","community"]},
+};
+
+/* pronunciation tips for Hebrew speakers, keyed by spelling patterns */
+const TIP_RULES = [
+  {re:/th/, tip:"צליל TH: קצה הלשון בין השיניים. לא ס/ת/ד/ז."},
+  {re:/^w/, tip:"W בהתחלה: עיגול שפתיים, בלי מגע שיניים (זה לא V)."},
+  {re:/v/, tip:"V: שיניים עליונות על השפה התחתונה, עם קול."},
+  {re:/r/, tip:"R אנגלית: רכה, הלשון לא נוגעת בחך, בלי גרון."},
+  {re:/ed$/, tip:"סיומת -ED: בדרך כלל d או t קצרה, לא הברה נוספת (חוץ מאחרי t/d)."},
+  {re:/(ee|ea)/, tip:"תנועה ארוכה: משוך את ה-\"אִי\" (ship לעומת sheep)."},
+  {re:/^h/, tip:"H בהתחלה: נשיפה קלה, לא \"ח\" גרונית."},
+  {re:/s$/, tip:"S בסוף מילה: חייבת להישמע, אל תבלע אותה."},
+  {re:/(al|ol|ou)[dk]/, tip:"L שקטה: ב-would/could/walk ה-l לא נשמעת."},
+  {re:/tion|sion|ssion|ssue/, tip:"-TION / -SSION: נשמע \"שְן\" קצר, ההטעמה לפניו."},
+];
+
+/* ---------- state ---------- */
+const KEY="speakup-proto";
+function load(){ try{ return JSON.parse(localStorage.getItem(KEY)) || {} }catch(e){ return {} } }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)) }catch(e){} }
+let state = Object.assign({level:null, levelScore:null, sessions:[], hardWords:{}}, load());
+
+/* ---------- speech: synthesis ---------- */
+let voice=null;
+function pickVoice(){
+  const vs = speechSynthesis.getVoices().filter(v=>/^en/i.test(v.lang));
+  if(!vs.length) return;
+  const score = v => (/natural/i.test(v.name)?4:0) + (/google/i.test(v.name)?3:0) + (/en-US/i.test(v.lang)?2:0) + (/en-GB/i.test(v.lang)?1:0);
+  voice = vs.sort((a,b)=>score(b)-score(a))[0];
+}
+if("speechSynthesis" in window){ pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
+function speak(text, rate){
+  if(!("speechSynthesis" in window)) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang="en-US"; u.rate = rate || 0.92; if(voice) u.voice = voice;
+  speechSynthesis.speak(u);
+}
+
+/* ---------- speech: recognition ---------- */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+function listen(opts){
+  const r = new SR();
+  r.lang="en-US"; r.interimResults=true; r.maxAlternatives=5; r.continuous=!!opts.continuous;
+  const finals=[];
+  r.onresult = e => {
+    let interim="";
+    for(let k=e.resultIndex;k<e.results.length;k++){
+      const res=e.results[k];
+      if(res.isFinal) finals.push(Array.from(res).map(a=>a.transcript.trim()).filter(Boolean));
+      else interim += res[0].transcript;
+    }
+    opts.onInterim && opts.onInterim((finals.map(f=>f[0]).join(" ")+" "+interim).trim());
+  };
+  r.onerror = e => opts.onError && opts.onError(e.error);
+  r.onend = () => opts.onEnd && opts.onEnd(finals);
+  try{ r.start(); }catch(e){ opts.onError && opts.onError("start-failed"); }
+  return r;
+}
+const ERR_HE = {
+  "not-allowed":"הדפדפן חסם את המיקרופון. אשר גישה למיקרופון בשורת הכתובת ונסה שוב.",
+  "no-speech":"לא נקלט דיבור. דבר קרוב יותר למיקרופון ונסה שוב.",
+  "audio-capture":"לא נמצא מיקרופון במכשיר.",
+  "network":"זיהוי הדיבור דורש חיבור לאינטרנט.",
+  "aborted":"ההקלטה בוטלה.",
+};
+
+/* ---------- scoring ---------- */
+const CONTR = {"i'm":"i am","i've":"i have","i'd":"i would","i'll":"i will","it's":"it is","that's":"that is","there's":"there is","they're":"they are","we're":"we are","you're":"you are","she's":"she is","he's":"he is","don't":"do not","doesn't":"does not","didn't":"did not","can't":"can not","cannot":"can not","isn't":"is not","aren't":"are not","wasn't":"was not","weren't":"were not","won't":"will not","wouldn't":"would not","couldn't":"could not","shouldn't":"should not","haven't":"have not","hasn't":"has not","let's":"let us","what's":"what is","where's":"where is"};
+const ONES=["zero","one","two","three","four","five","six","seven","eight","nine","ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen","eighteen","nineteen"];
+const TENS=["","","twenty","thirty","forty","fifty","sixty","seventy","eighty","ninety"];
+function numWords(n){ n=+n; if(n<20) return ONES[n]; if(n<100){ const t=TENS[Math.floor(n/10)], o=n%10; return o? t+" "+ONES[o] : t; } return String(n); }
+function tokens(s){
+  return s.toLowerCase().replace(/[’‘]/g,"'").replace(/-/g," ").split(/\s+/)
+    .map(w=>w.replace(/[^a-z0-9']/g,"")).filter(Boolean)
+    .flatMap(w=> CONTR[w] ? CONTR[w].split(" ") : /^\d+$/.test(w) ? numWords(w).split(" ") : [w]);
+}
+function lev(a,b){
+  if(a===b) return 0;
+  const m=a.length,n=b.length; let prev=Array.from({length:n+1},(_,j)=>j);
+  for(let i=1;i<=m;i++){ const cur=[i]; for(let j=1;j<=n;j++) cur[j]=Math.min(prev[j]+1,cur[j-1]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1)); prev=cur; }
+  return prev[n];
+}
+const same=(a,b)=> a===b || (a.length>=5 && b.length>=5 && lev(a,b)<=1);
+function align(t,h){
+  const n=t.length,m=h.length;
+  const dp=Array.from({length:n+1},()=>new Array(m+1).fill(0));
+  for(let i=n-1;i>=0;i--) for(let j=m-1;j>=0;j--) dp[i][j]= same(t[i],h[j]) ? dp[i+1][j+1]+1 : Math.max(dp[i+1][j],dp[i][j+1]);
+  const hits=new Array(n).fill(false); let i=0,j=0;
+  while(i<n&&j<m){ if(same(t[i],h[j])){hits[i]=true;i++;j++;} else if(dp[i+1][j]>=dp[i][j+1]) i++; else j++; }
+  return hits;
+}
+/* score a sentence against candidate transcripts; returns per display-word result */
+function scoreSentence(sentence, candidates){
+  const display = sentence.split(/\s+/);
+  const map=[]; const target=[];
+  display.forEach((w,di)=>{ tokens(w).forEach(t=>{ target.push(t); map.push(di); }); });
+  let best=null;
+  for(const c of candidates.length?candidates:[""]){
+    const hits = align(target, tokens(c));
+    const n = hits.filter(Boolean).length;
+    if(!best || n>best.n) best={n,hits,heard:c};
+  }
+  const wordHit = display.map(()=>true);
+  best.hits.forEach((h,ti)=>{ if(!h) wordHit[map[ti]]=false; });
+  const score = target.length ? Math.round(100*best.n/target.length) : 0;
+  const missed = display.filter((w,i)=>!wordHit[i]).map(w=>w.replace(/[^A-Za-z']/g,""));
+  return {display, wordHit, score, heard:best.heard, missed};
+}
+function tipsFor(word){
+  const w=word.toLowerCase(); const out=[];
+  for(const r of TIP_RULES){ if(r.re.test(w)) out.push(r.tip); if(out.length>=2) break; }
+  return out;
+}
+function candidatesFrom(finals){
+  if(!finals.length) return [];
+  if(finals.length===1) return finals[0];
+  const joined = finals.map(f=>f[0]).join(" ");
+  return [joined];
+}
+
+/* ---------- UI helpers ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const ICON_PLAY='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
+const ICON_MIC='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11z"/></svg>';
+function wordsHtml(r){ return '<div class="words">'+r.display.map((w,i)=>`<span class="${r.wordHit[i]?"hit":"miss"}">${esc(w)}</span>`).join(" ")+'</div>'; }
+function scoreClass(s){ return s>=85?"good":s>=60?"mid":"bad"; }
+function tipsHtml(missed){
+  const seen=new Set(); const items=[];
+  missed.forEach(w=>{ if(!w||seen.has(w.toLowerCase())) return; seen.add(w.toLowerCase());
+    const t=tipsFor(w); items.push(`<li><span class="w">${esc(w)}</span>${t.length?": "+esc(t.join(" ")):": לא זוהתה. האזן שוב ונסה להדגיש כל הברה."}</li>`); });
+  return items.length? `<ul class="tips">${items.join("")}</ul>` : "";
+}
+function recordInto(btn, statusEl, opts){
+  if(!SR){ statusEl.textContent="זיהוי דיבור לא זמין בדפדפן הזה."; return; }
+  btn.disabled=true; btn.classList.add("rec"); btn.innerHTML='<span class="dot"></span> מקשיב...';
+  statusEl.textContent="דבר עכשיו.";
+  const r = listen({
+    continuous: opts.continuous,
+    onInterim: t => { statusEl.textContent = t ? "שומע: " + t : "דבר עכשיו."; },
+    onError: e => { statusEl.textContent = ERR_HE[e] || ("שגיאה: "+e); },
+    onEnd: finals => { btn.disabled=false; btn.classList.remove("rec"); btn.innerHTML=opts.label; opts.onDone(finals); }
+  });
+  return r;
+}
+
+/* ---------- navigation ---------- */
+function showScreen(name){
+  document.querySelectorAll("nav button").forEach(b=>b.setAttribute("aria-selected", String(b.dataset.screen===name)));
+  ["diag","lesson","progress"].forEach(s=>{ $("#screen-"+s).hidden = s!==name; });
+  if(name==="diag") renderDiagStart();
+  if(name==="lesson") renderLessonStart();
+  if(name==="progress") renderProgress();
+}
+document.querySelectorAll("nav button").forEach(b=>b.addEventListener("click",()=>showScreen(b.dataset.screen)));
+function updatePill(){ $("#levelPill").textContent = state.level ? `${state.level} · ${LEVEL_NAMES[state.level]}` : "טרם נקבעה"; }
+
+/* ---------- diagnostic ---------- */
+let diag=null;
+function renderDiagStart(){
+  const el=$("#screen-diag");
+  el.innerHTML = `
+    <div class="card">
+      <div class="eyebrow">אבחון רמה</div>
+      <h2>שמונה פריטים, כחמש דקות</h2>
+      <p class="muted">שש שאלות בחירה והאזנה ושני משפטים לקריאה בקול. בסוף תקבל רמה בסולם CEFR (A1 עד B2) ושיעור מותאם.</p>
+      ${state.level?`<p>הרמה הנוכחית שלך: <b>${state.level}</b>. אבחון חדש יחליף אותה.</p>`:""}
+      <div class="row"><button class="btn primary" id="diagStart">התחל אבחון</button></div>
+    </div>`;
+  $("#diagStart").addEventListener("click",()=>{ diag={i:0,pts:0,log:[]}; renderDiagItem(); });
+}
+function renderDiagItem(){
+  const el=$("#screen-diag");
+  if(diag.i>=DIAG.length) return renderDiagResult();
+  const d=DIAG[diag.i];
+  const head=`<div class="progress"><i style="width:${Math.round(100*diag.i/DIAG.length)}%"></i></div>
+    <div class="card"><div class="eyebrow">פריט ${diag.i+1} מתוך ${DIAG.length} · רמה ${LEVELS[d.lvl-1]}</div><h2>${esc(d.q)}</h2>`;
+  if(d.type==="mc"){
+    el.innerHTML = head + `<p class="en">${esc(d.en)}</p><div class="options">${d.opts.map((o,i)=>`<button class="en-opt" data-i="${i}">${esc(o)}</button>`).join("")}</div><div class="status" id="dStatus"></div></div>`;
+    bindOptions(d);
+  } else if(d.type==="listen"){
+    el.innerHTML = head + `<div class="row"><button class="btn" id="dPlay">${ICON_PLAY} האזן</button><button class="btn" id="dSlow">האזן לאט</button></div>
+      <div class="options">${d.opts.map((o,i)=>`<button data-i="${i}">${esc(o)}</button>`).join("")}</div><div class="status" id="dStatus"></div></div>`;
+    $("#dPlay").addEventListener("click",()=>speak(d.en));
+    $("#dSlow").addEventListener("click",()=>speak(d.en,0.7));
+    bindOptions(d);
+  } else {
+    el.innerHTML = head + `<p class="en">${esc(d.en)}</p><p class="trans">${esc(d.trans)}</p>
+      <div class="row"><button class="btn" id="dPlay">${ICON_PLAY} האזן קודם</button><button class="btn primary" id="dRec">${ICON_MIC} הקלט</button></div>
+      <div class="status" id="dStatus"></div><div id="dResult"></div></div>`;
+    $("#dPlay").addEventListener("click",()=>speak(d.en));
+    $("#dRec").addEventListener("click",()=>{
+      recordInto($("#dRec"), $("#dStatus"), {label:ICON_MIC+" הקלט שוב", onDone:finals=>{
+        const r=scoreSentence(d.en, candidatesFrom(finals));
+        const pass = r.score>=70;
+        $("#dResult").innerHTML = wordsHtml(r)+`<div class="heard">${r.heard?esc(r.heard):"(לא נקלט דיבור)"}</div>
+          <div class="scoreline"><span class="score ${scoreClass(r.score)}">${r.score}%</span><small>${pass?"עבר":"מתחת ל-70%, אפשר לנסות שוב או להמשיך"}</small></div>
+          <div class="row"><button class="btn primary" id="dNext">המשך</button></div>`;
+        $("#dNext").addEventListener("click",()=>{ if(pass) diag.pts+=d.pts; diag.log.push({item:d.en,score:r.score}); diag.i++; renderDiagItem(); });
+      }});
+    });
+  }
+}
+function bindOptions(d){
+  document.querySelectorAll("#screen-diag .options button").forEach(b=>b.addEventListener("click",()=>{
+    const i=+b.dataset.i; const ok=i===d.ans;
+    document.querySelectorAll("#screen-diag .options button").forEach(x=>x.disabled=true);
+    b.classList.add(ok?"right":"wrong");
+    if(!ok) document.querySelector(`#screen-diag .options button[data-i="${d.ans}"]`).classList.add("right");
+    if(ok) diag.pts+=d.pts;
+    diag.log.push({item:d.en, ok});
+    $("#dStatus").innerHTML = (ok?"נכון. ":"לא נכון. ")+`<button class="btn" id="dNext" style="margin-inline-start:8px">המשך</button>`;
+    $("#dNext").addEventListener("click",()=>{ diag.i++; renderDiagItem(); });
+  }));
+}
+function levelFromPoints(p){ return p<=5?"A1":p<=9?"A2":p<=13?"B1":"B2"; }
+function renderDiagResult(){
+  const lvl=levelFromPoints(diag.pts);
+  state.level=lvl; state.levelScore=diag.pts; save(); updatePill();
+  $("#screen-diag").innerHTML = `<div class="progress"><i style="width:100%"></i></div>
+    <div class="card"><div class="eyebrow">תוצאת האבחון</div>
+      <h2>הרמה שלך: ${lvl} · ${LEVEL_NAMES[lvl]}</h2>
+      <p class="muted">${diag.pts} מתוך ${DIAG_MAX} נקודות. הנקודות משוקללות לפי רמת הפריט, כך שטעות בשאלת B2 שוקלת יותר מטעות בשאלת A1.</p>
+      <p>השיעור הראשון מותאם לרמה הזו: חמישה משפטים להגייה ושאלה פתוחה לדיבור חופשי.</p>
+      <div class="row"><button class="btn primary" id="toLesson">התחל שיעור</button></div></div>`;
+  $("#toLesson").addEventListener("click",()=>showScreen("lesson"));
+}
+
+/* ---------- lesson ---------- */
+let lesson=null;
+function renderLessonStart(){
+  const el=$("#screen-lesson");
+  if(!state.level){
+    el.innerHTML=`<div class="card"><h2>קודם אבחון</h2><p class="muted">השיעור נבנה לפי הרמה, אז נתחיל באבחון קצר. אפשר גם לבחור רמה ידנית במסך ההתקדמות.</p><div class="row"><button class="btn primary" id="goDiag">לאבחון</button></div></div>`;
+    $("#goDiag").addEventListener("click",()=>showScreen("diag")); return;
+  }
+  el.innerHTML=`<div class="card"><div class="eyebrow">שיעור · רמה ${state.level}</div><h2>חמישה משפטים ושיחה קצרה</h2>
+    <p class="muted">לכל משפט: האזן, חזור בקול, וראה אילו מילים זוהו. מילים שלא זוהו מקבלות טיפ הגייה שמותאם לדוברי עברית. בסוף שאלה פתוחה לדיבור חופשי.</p>
+    <div class="row"><button class="btn primary" id="lessonStart">התחל שיעור</button></div></div>`;
+  $("#lessonStart").addEventListener("click",()=>{ lesson={level:state.level,i:0,results:[]}; renderSentence(); });
+}
+function renderSentence(){
+  const el=$("#screen-lesson"); const bank=BANK[lesson.level];
+  if(lesson.i>=bank.length) return renderFree();
+  const s=bank[lesson.i];
+  el.innerHTML=`<div class="progress"><i style="width:${Math.round(100*lesson.i/(bank.length+1))}%"></i></div>
+    <div class="card"><div class="eyebrow">משפט ${lesson.i+1} מתוך ${bank.length} · מוקד: ${esc(s.focus)}</div>
+      <p class="en">${esc(s.en)}</p><p class="trans">${esc(s.he)}</p>
+      <div class="hint">${esc(s.hint)}</div>
+      <div class="row"><button class="btn" id="lPlay">${ICON_PLAY} האזן</button><button class="btn" id="lSlow">לאט</button><button class="btn primary" id="lRec">${ICON_MIC} הקלט</button></div>
+      <div class="status" id="lStatus"></div><div id="lResult"></div></div>`;
+  $("#lPlay").addEventListener("click",()=>speak(s.en));
+  $("#lSlow").addEventListener("click",()=>speak(s.en,0.7));
+  $("#lRec").addEventListener("click",()=>{
+    recordInto($("#lRec"), $("#lStatus"), {label:ICON_MIC+" הקלט שוב", onDone:finals=>{
+      const r=scoreSentence(s.en, candidatesFrom(finals));
+      $("#lResult").innerHTML = wordsHtml(r)+`<div class="heard">${r.heard?esc(r.heard):"(לא נקלט דיבור)"}</div>
+        <div class="scoreline"><span class="score ${scoreClass(r.score)}">${r.score}%</span><small>${r.missed.length?r.missed.length+" מילים לא זוהו":"כל המילים זוהו"}</small></div>
+        ${tipsHtml(r.missed)}
+        <div class="row">${r.missed.length?`<button class="btn" id="lPlayMissed">${ICON_PLAY} האזן למילים החסרות</button>`:""}<button class="btn primary" id="lNext">${lesson.i+1<bank.length?"למשפט הבא":"לדיבור חופשי"}</button></div>`;
+      if(r.missed.length) $("#lPlayMissed").addEventListener("click",()=>speak(r.missed.join(". "),0.75));
+      $("#lNext").addEventListener("click",()=>{ lesson.results.push({en:s.en,score:r.score,missed:r.missed}); lesson.i++; renderSentence(); });
+    }});
+  });
+}
+function renderFree(){
+  const el=$("#screen-lesson"); const f=FREE[lesson.level]; let rec=null, t0=0;
+  el.innerHTML=`<div class="progress"><i style="width:90%"></i></div>
+    <div class="card"><div class="eyebrow">דיבור חופשי</div>
+      <p class="en sm">${esc(f.q)}</p><p class="trans">${esc(f.he)}</p>
+      <p class="muted">ענה בכמה משפטים, 20 עד 60 שניות. נסה לשלב: <span style="direction:ltr;unicode-bidi:isolate;font-family:var(--font-en)">${f.vocab.join(", ")}</span></p>
+      <div class="row"><button class="btn" id="fPlay">${ICON_PLAY} האזן לשאלה</button><button class="btn primary" id="fRec">${ICON_MIC} התחל לדבר</button><button class="btn" id="fStop" hidden>סיים</button></div>
+      <div class="status" id="fStatus"></div><div id="fResult"></div></div>`;
+  $("#fPlay").addEventListener("click",()=>speak(f.q));
+  $("#fRec").addEventListener("click",()=>{
+    t0=Date.now(); $("#fStop").hidden=false;
+    rec=recordInto($("#fRec"), $("#fStatus"), {continuous:true, label:ICON_MIC+" דבר שוב", onDone:finals=>{
+      $("#fStop").hidden=true;
+      const secs=Math.max(1,Math.round((Date.now()-t0)/1000));
+      const text=finals.map(x=>x[0]).join(" ");
+      const tk=tokens(text); const words=tk.length;
+      const wpm=Math.round(words/secs*60);
+      const fillers=tk.filter(w=>/^(um|uh|hmm|mm|like|eh)$/.test(w)).length;
+      const used=f.vocab.filter(v=>tk.includes(v));
+      lesson.free={text,secs,words,wpm,used};
+      $("#fResult").innerHTML=`<div class="heard">${text?esc(text):"(לא נקלט דיבור)"}</div>
+        <div class="metrics"><div><b>${words}</b><small>מילים</small></div><div><b>${secs}s</b><small>משך</small></div><div><b>${wpm}</b><small>מילים לדקה (יעד: 100 עד 150)</small></div><div><b>${used.length}/${f.vocab.length}</b><small>מילות יעד בשימוש</small></div><div><b>${fillers}</b><small>מילות מילוי (um, uh)</small></div></div>
+        <div class="row"><button class="btn primary" id="fFinish">סיים שיעור</button></div>`;
+      $("#fFinish").addEventListener("click",finishLesson);
+    }});
+  });
+  $("#fStop").addEventListener("click",()=>{ if(rec) rec.stop(); });
+}
+function finishLesson(){
+  const avg=Math.round(lesson.results.reduce((s,r)=>s+r.score,0)/Math.max(1,lesson.results.length));
+  lesson.results.forEach(r=>r.missed.forEach(w=>{ const k=w.toLowerCase(); if(k) state.hardWords[k]=(state.hardWords[k]||0)+1; }));
+  state.sessions.push({date:new Date().toISOString().slice(0,10), level:lesson.level, avg, wpm:lesson.free?lesson.free.wpm:null});
+  save();
+  const recent=state.sessions.filter(s=>s.level===lesson.level).slice(-3);
+  const promote = recent.length>=3 && recent.every(s=>s.avg>=85) && LEVELS.indexOf(lesson.level)<LEVELS.length-1;
+  const next = LEVELS[LEVELS.indexOf(lesson.level)+1];
+  $("#screen-lesson").innerHTML=`<div class="progress"><i style="width:100%"></i></div>
+    <div class="card"><div class="eyebrow">סיכום השיעור</div><h2>ממוצע הגייה: ${avg}%</h2>
+      <div class="tablewrap"><table><thead><tr><th>משפט</th><th>ציון</th><th>לא זוהו</th></tr></thead><tbody>
+      ${lesson.results.map(r=>`<tr><td style="direction:ltr;text-align:left;font-family:var(--font-en)">${esc(r.en)}</td><td>${r.score}%</td><td style="direction:ltr;text-align:left;font-family:var(--font-en)">${esc(r.missed.join(", "))||"—"}</td></tr>`).join("")}
+      </tbody></table></div>
+      ${promote?`<div class="hint">שלושה שיעורים רצופים מעל 85% ברמה ${lesson.level}. מומלץ לעלות ל-${next}.</div><div class="row"><button class="btn primary" id="promote">עלה לרמה ${next}</button><button class="btn" id="stay">הישאר ב-${lesson.level}</button></div>`
+        :`<p class="muted">כלל הקידום: שלושה שיעורים רצופים עם ממוצע 85% ומעלה מעלים רמה. עד כה ברמה זו: ${recent.map(s=>s.avg+"%").join(", ")}.</p><div class="row"><button class="btn primary" id="again">שיעור נוסף</button><button class="btn" id="toProg">להתקדמות</button></div>`}
+    </div>`;
+  if(promote){
+    $("#promote").addEventListener("click",()=>{ state.level=next; save(); updatePill(); showScreen("lesson"); });
+    $("#stay").addEventListener("click",()=>showScreen("lesson"));
+  } else {
+    $("#again").addEventListener("click",()=>showScreen("lesson"));
+    $("#toProg").addEventListener("click",()=>showScreen("progress"));
+  }
+}
+
+/* ---------- progress ---------- */
+function renderProgress(){
+  const el=$("#screen-progress");
+  const hard=Object.entries(state.hardWords).sort((a,b)=>b[1]-a[1]).slice(0,20);
+  el.innerHTML=`
+    <div class="card"><div class="eyebrow">מצב נוכחי</div>
+      <h2>רמה ${state.level||"טרם נקבעה"}${state.level?" · "+LEVEL_NAMES[state.level]:""}</h2>
+      <div class="row"><label for="levelSel">שינוי ידני:</label><select id="levelSel"><option value="">בחר</option>${LEVELS.map(l=>`<option value="${l}" ${state.level===l?"selected":""}>${l} · ${LEVEL_NAMES[l]}</option>`).join("")}</select></div>
+    </div>
+    <div class="card"><div class="eyebrow">שיעורים</div>
+      ${state.sessions.length?`<div class="tablewrap"><table><thead><tr><th>תאריך</th><th>רמה</th><th>ממוצע הגייה</th><th>מילים לדקה</th></tr></thead><tbody>${state.sessions.slice().reverse().map(s=>`<tr><td>${s.date}</td><td>${s.level}</td><td>${s.avg}%</td><td>${s.wpm??"—"}</td></tr>`).join("")}</tbody></table></div>`:`<p class="muted">עדיין אין שיעורים. השיעור הראשון יופיע כאן.</p>`}
+    </div>
+    <div class="card"><div class="eyebrow">מילים לתרגול חוזר</div>
+      ${hard.length?`<div class="hard">${hard.map(([w,c])=>`<span>${esc(w)}<small>×${c}</small></span>`).join("")}</div><div class="row"><button class="btn" id="playHard">${ICON_PLAY} האזן לכולן</button></div>`:`<p class="muted">מילים שלא זוהו בשיעורים יצטברו כאן.</p>`}
+    </div>
+    <div class="card"><div class="eyebrow">משוב מעמיק מ-Claude</div>
+      <p class="muted">הדף הזה לא פונה ל-Claude בעצמו. הכפתור מעתיק סיכום קצר של ההתקדמות שלך, ואותו מדביקים בשיחה ב-claude.ai כדי לקבל ניתוח ותרגילים ממוקדים במסגרת המנוי.</p>
+      <div class="row"><button class="btn primary" id="copySum">העתק סיכום לשיחה עם Claude</button><button class="btn" id="resetAll">אפס נתונים</button></div>
+      <div class="status" id="pStatus"></div>
+      <textarea id="sumBox" class="hiddenbox" readonly></textarea>
+    </div>`;
+  $("#levelSel").addEventListener("change",e=>{ if(e.target.value){ state.level=e.target.value; save(); updatePill(); renderProgress(); } });
+  if(hard.length) $("#playHard").addEventListener("click",()=>speak(hard.map(h=>h[0]).join(". "),0.8));
+  $("#copySum").addEventListener("click",async()=>{
+    const txt=buildSummary(); const box=$("#sumBox");
+    try{ await navigator.clipboard.writeText(txt); $("#pStatus").textContent="הועתק. פתח שיחה ב-claude.ai והדבק."; }
+    catch(e){ box.className=""; box.value=txt; box.select(); $("#pStatus").textContent="לא ניתן להעתיק אוטומטית. הטקסט מסומן למטה, העתק ידנית."; }
+  });
+  $("#resetAll").addEventListener("click",()=>{
+    $("#pStatus").innerHTML=`למחוק את כל ההתקדמות? <button class="btn" id="resetYes" style="margin-inline-start:8px">כן, מחק</button>`;
+    $("#resetYes").addEventListener("click",()=>{ state={level:null,levelScore:null,sessions:[],hardWords:{}}; save(); updatePill(); renderProgress(); });
+  });
+}
+function buildSummary(){
+  const hard=Object.entries(state.hardWords).sort((a,b)=>b[1]-a[1]).slice(0,15).map(([w,c])=>`${w} (x${c})`).join(", ");
+  const last=state.sessions.slice(-5).map(s=>`${s.date}: level ${s.level}, pronunciation ${s.avg}%${s.wpm?", "+s.wpm+" wpm":""}`).join("\n");
+  return `אני לומד אנגלית מדוברת עם אפליקציית תרגול. אנא נתח את ההתקדמות שלי ותן לי 5 תרגילי הגייה ממוקדים בעברית, עם הסבר קצר לכל צליל.
+
+Level (CEFR): ${state.level||"not set"}
+Recent sessions:
+${last||"none yet"}
+Words the speech recognizer kept missing: ${hard||"none yet"}
+
+I am a native Hebrew speaker. Focus on the sounds Hebrew speakers find hardest.`;
+}
+
+/* ---------- boot ---------- */
+(function boot(){
+  const b=$("#support");
+  if(!SR){ b.hidden=false; b.textContent="זיהוי דיבור לא נתמך בדפדפן הזה. פתח את הקובץ ב-Chrome או ב-Edge כדי לתרגל הגייה. ההאזנה והשאלות עובדות גם כאן."; }
+  else if(!("speechSynthesis" in window)){ b.hidden=false; b.textContent="הקראה לא נתמכת בדפדפן הזה."; }
+  updatePill();
+  showScreen(state.level ? "lesson" : "diag");
+})();
+</script>
+</body>
+</html>
