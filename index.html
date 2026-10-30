@@ -106,7 +106,10 @@ footer{color:var(--muted);font-size:.85rem;margin-top:24px}
     <section id="screen-progress" hidden></section>
   </main>
 
-  <footer>אבטיפוס. זיהוי דיבור והקראה דרך הדפדפן בלבד, ללא שירות חיצוני. הנתונים נשמרים בדפדפן הזה בלבד.</footer>
+  <footer>אבטיפוס. זיהוי דיבור והקראה דרך הדפדפן בלבד, ללא שירות חיצוני. הנתונים נשמרים בדפדפן הזה בלבד.
+    <div class="row"><button class="btn" id="audioTest">בדיקת שמע</button></div>
+    <pre id="audioOut" style="white-space:pre-wrap;direction:rtl;text-align:right;font:inherit;font-size:.85rem;margin:8px 0 0"></pre>
+  </footer>
 </div>
 
 <script>
@@ -187,6 +190,7 @@ let state = Object.assign({level:null, levelScore:null, sessions:[], hardWords:{
 
 /* ---------- speech: synthesis ---------- */
 let voice=null;
+const IS_IOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform==="MacIntel" && navigator.maxTouchPoints>1);
 function pickVoice(){
   const vs = speechSynthesis.getVoices().filter(v=>/^en/i.test(v.lang));
   if(!vs.length) return;
@@ -202,18 +206,19 @@ function speakStatus(msg){
 function speak(text, rate){
   if(!("speechSynthesis" in window)){ speakStatus("הקראה לא נתמכת בדפדפן הזה."); return; }
   const synth=speechSynthesis;
-  if(synth.speaking || synth.pending) synth.cancel();
+  const needCancel = synth.speaking || synth.pending;
+  if(needCancel) synth.cancel();
   if(!voice) pickVoice();
   const u = new SpeechSynthesisUtterance(text);
   u.lang="en-US"; u.rate = rate || 0.92; u.volume=1; u.pitch=1;
-  if(voice) u.voice = voice;
+  if(voice && !IS_IOS) u.voice = voice; // iOS Safari: a manually chosen voice can play silently; lang alone is reliable
   let started=false;
   u.onstart=()=>{ started=true; speakStatus("משמיע..."); };
   u.onend=()=>{ if(started) speakStatus(""); };
   u.onerror=e=>{ if(e.error!=="interrupted" && e.error!=="canceled") speakStatus("ההקראה נכשלה ("+e.error+")."); };
   currentUtterance=u;
-  synth.speak(u);
-  if(synth.paused) synth.resume();
+  const go=()=>{ synth.speak(u); if(synth.paused) synth.resume(); };
+  if(needCancel) setTimeout(go,80); else go(); // iOS drops an utterance queued in the same tick as cancel()
   setTimeout(()=>{
     if(!started && !synth.speaking) speakStatus("ההקראה לא התחילה. באייפון: ודא שמתג השקט בצד המכשיר לא מופעל, והגבר עוצמת שמע.");
   },1800);
@@ -544,6 +549,33 @@ Words the speech recognizer kept missing: ${hard||"none yet"}
 
 I am a native Hebrew speaker. Focus on the sounds Hebrew speakers find hardest.`;
 }
+
+/* ---------- audio self-test (beep via Web Audio, then plain TTS, with a visible report) ---------- */
+function audioTest(){
+  const out=$("#audioOut"); const lines=[];
+  const render=()=>{ out.textContent=lines.join("\n"); };
+  lines.push("מכשיר: "+(IS_IOS?"iOS":"לא iOS")+" · "+navigator.userAgent.replace(/^Mozilla\/5\.0 /,"").slice(0,70));
+  try{
+    const AC=window.AudioContext||window.webkitAudioContext; const ctx=new AC();
+    const o=ctx.createOscillator(), g=ctx.createGain(); g.gain.value=0.25; o.frequency.value=660;
+    o.connect(g); g.connect(ctx.destination); o.start(); o.stop(ctx.currentTime+0.7);
+    if(ctx.state==="suspended") ctx.resume();
+    lines.push("צפצוף: נשלח. אם לא שמעת צפצוף, הבעיה בעוצמה, במצב שקט או בבלוטות', לא בדף.");
+  }catch(e){ lines.push("צפצוף נכשל: "+e.message); }
+  if(!("speechSynthesis" in window)){ lines.push("הקראה: speechSynthesis לא קיים בדפדפן זה"); render(); return; }
+  const vs=speechSynthesis.getVoices(), en=vs.filter(v=>/^en/i.test(v.lang));
+  lines.push("קולות: "+vs.length+" בסך הכל, "+en.length+" באנגלית"+(en.length?" ("+en.slice(0,3).map(v=>v.name).join(", ")+")":""));
+  const u=new SpeechSynthesisUtterance("Hello. This is a test."); u.lang="en-US"; u.volume=1; u.rate=1;
+  let started=false;
+  u.onstart=()=>{ started=true; lines.push("הקראה: התחילה"); render(); };
+  u.onend=()=>{ lines.push("הקראה: הסתיימה"); render(); };
+  u.onerror=e=>{ lines.push("הקראה: שגיאה "+e.error); render(); };
+  currentUtterance=u;
+  speechSynthesis.speak(u);
+  render();
+  setTimeout(()=>{ lines.push("אחרי 2 שניות: speaking="+speechSynthesis.speaking+", pending="+speechSynthesis.pending+", paused="+speechSynthesis.paused+(started?"":", onstart לא הופעל")); render(); },2000);
+}
+$("#audioTest").addEventListener("click",audioTest);
 
 /* ---------- boot ---------- */
 (function boot(){
